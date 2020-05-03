@@ -14,7 +14,10 @@
 void B2();
 void B3();
 void B5();
+void B6();
 void wait(int);
+
+enum state {SLOW = 1000, FAST = 200};
 
 int b5Animation[] = {
 	0b00000000,
@@ -31,7 +34,7 @@ int b5Animation[] = {
 
 int main(void)
 {
-	B5();
+	B6();
 }
 void B2()
 {
@@ -80,6 +83,48 @@ void B5()
 		
 	}
 } 
+
+void B6()
+{
+	DDRD = 0b11111111; //Set pins of PORTD to output
+	DDRC = 0b00000000; //Set pins of PORTC to input
+	
+	while(1)
+	{	
+		int toggleIndex = 0;
+		int maxToggleIndex = 1;
+		enum state ledState = SLOW;
+		
+		if(PINC & 1)
+		{
+			if(toggleIndex == maxToggleIndex)
+			{
+				toggleIndex = 0;	
+			} 
+			else
+			{
+				toggleIndex++;
+			}
+			
+			
+			switch(toggleIndex)
+			{
+				case 0:
+					ledState = SLOW;
+				break;	
+				case 1:
+					ledState = FAST;
+				break;
+			}
+			
+		}
+		
+		PORTD ^= BIT(7);
+		wait(ledState);
+	}
+	
+	
+}
 
 void wait(int ms)
 {

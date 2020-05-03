@@ -3,29 +3,29 @@ PracticumWeek1.elf:     file format elf32-avr
 
 Sections:
 Idx Name          Size      VMA       LMA       File off  Algn
-  0 .data         00000014  00800100  00000100  00000174  2**0
+  0 .data         00000000  00800100  00800100  0000015a  2**0
                   CONTENTS, ALLOC, LOAD, DATA
-  1 .text         00000100  00000000  00000000  00000074  2**1
+  1 .text         00000106  00000000  00000000  00000054  2**1
                   CONTENTS, ALLOC, LOAD, READONLY, CODE
-  2 .comment      00000030  00000000  00000000  00000188  2**0
+  2 .comment      00000030  00000000  00000000  0000015a  2**0
                   CONTENTS, READONLY
-  3 .note.gnu.avr.deviceinfo 0000003c  00000000  00000000  000001b8  2**2
+  3 .note.gnu.avr.deviceinfo 0000003c  00000000  00000000  0000018c  2**2
                   CONTENTS, READONLY
-  4 .debug_aranges 00000040  00000000  00000000  000001f4  2**0
+  4 .debug_aranges 00000048  00000000  00000000  000001c8  2**0
                   CONTENTS, READONLY, DEBUGGING
-  5 .debug_info   000009db  00000000  00000000  00000234  2**0
+  5 .debug_info   00000a4d  00000000  00000000  00000210  2**0
                   CONTENTS, READONLY, DEBUGGING
-  6 .debug_abbrev 0000087b  00000000  00000000  00000c0f  2**0
+  6 .debug_abbrev 000008bc  00000000  00000000  00000c5d  2**0
                   CONTENTS, READONLY, DEBUGGING
-  7 .debug_line   0000032a  00000000  00000000  0000148a  2**0
+  7 .debug_line   00000375  00000000  00000000  00001519  2**0
                   CONTENTS, READONLY, DEBUGGING
-  8 .debug_frame  00000064  00000000  00000000  000017b4  2**2
+  8 .debug_frame  00000074  00000000  00000000  00001890  2**2
                   CONTENTS, READONLY, DEBUGGING
-  9 .debug_str    00000466  00000000  00000000  00001818  2**0
+  9 .debug_str    0000049a  00000000  00000000  00001904  2**0
                   CONTENTS, READONLY, DEBUGGING
- 10 .debug_loc    0000007e  00000000  00000000  00001c7e  2**0
+ 10 .debug_loc    000000a4  00000000  00000000  00001d9e  2**0
                   CONTENTS, READONLY, DEBUGGING
- 11 .debug_ranges 00000030  00000000  00000000  00001cfc  2**0
+ 11 .debug_ranges 00000038  00000000  00000000  00001e42  2**0
                   CONTENTS, READONLY, DEBUGGING
 
 Disassembly of section .text:
@@ -114,29 +114,29 @@ Disassembly of section .text:
   98:	11 e0       	ldi	r17, 0x01	; 1
   9a:	a0 e0       	ldi	r26, 0x00	; 0
   9c:	b1 e0       	ldi	r27, 0x01	; 1
-  9e:	e0 e0       	ldi	r30, 0x00	; 0
+  9e:	e6 e0       	ldi	r30, 0x06	; 6
   a0:	f1 e0       	ldi	r31, 0x01	; 1
   a2:	00 e0       	ldi	r16, 0x00	; 0
   a4:	0b bf       	out	0x3b, r16	; 59
   a6:	02 c0       	rjmp	.+4      	; 0xac <__do_copy_data+0x14>
   a8:	07 90       	elpm	r0, Z+
   aa:	0d 92       	st	X+, r0
-  ac:	a4 31       	cpi	r26, 0x14	; 20
+  ac:	a0 30       	cpi	r26, 0x00	; 0
   ae:	b1 07       	cpc	r27, r17
   b0:	d9 f7       	brne	.-10     	; 0xa8 <__do_copy_data+0x10>
-  b2:	23 d0       	rcall	.+70     	; 0xfa <main>
-  b4:	23 c0       	rjmp	.+70     	; 0xfc <_exit>
+  b2:	26 d0       	rcall	.+76     	; 0x100 <main>
+  b4:	26 c0       	rjmp	.+76     	; 0x102 <_exit>
 
 000000b6 <__bad_interrupt>:
   b6:	a4 cf       	rjmp	.-184    	; 0x0 <__vectors>
 
 000000b8 <wait>:
-			PORTD ^= BIT(7);	//Toggle PORTD7
-		} 
-		else 
-		{	
-			wait(200);
-			PORTD &= ~BIT(7);	//Turn off PORTD7
+{
+	DDRD = 0b11111111; //Set pins of PORTD to output
+	
+	while(1)
+	{
+		for(int i = 0; i < 9; i++ )
   b8:	18 16       	cp	r1, r24
   ba:	19 06       	cpc	r1, r25
   bc:	6c f4       	brge	.+26     	; 0xd8 <wait+0x20>
@@ -155,54 +155,83 @@ Disassembly of section .text:
   d6:	a9 f7       	brne	.-22     	; 0xc2 <wait+0xa>
   d8:	08 95       	ret
 
-000000da <B5>:
+000000da <B6>:
 	}
-}
+} 
 
-void B5()
+void B6()
 {
 	DDRD = 0b11111111; //Set pins of PORTD to output
   da:	8f ef       	ldi	r24, 0xFF	; 255
   dc:	81 bb       	out	0x11, r24	; 17
-  de:	02 e1       	ldi	r16, 0x12	; 18
-  e0:	11 e0       	ldi	r17, 0x01	; 1
-  e2:	c0 e0       	ldi	r28, 0x00	; 0
-  e4:	d1 e0       	ldi	r29, 0x01	; 1
+	DDRC = 0b00000000; //Set pins of PORTC to input
+  de:	14 ba       	out	0x14, r1	; 20
 	
 	while(1)
-	{
-		for(int i = 0; i < 9; i++ )
-		{
-			PORTD = b5Animation[i];
-  e6:	88 81       	ld	r24, Y
-  e8:	22 96       	adiw	r28, 0x02	; 2
-  ea:	82 bb       	out	0x12, r24	; 18
-			wait(500);
-  ec:	84 ef       	ldi	r24, 0xF4	; 244
-  ee:	91 e0       	ldi	r25, 0x01	; 1
-  f0:	e3 df       	rcall	.-58     	; 0xb8 <wait>
-{
-	DDRD = 0b11111111; //Set pins of PORTD to output
+	{	
+		int toggleIndex = 0;
+		int maxToggleIndex = 1;
+		enum state ledState = SLOW;
+  e0:	08 ee       	ldi	r16, 0xE8	; 232
+  e2:	13 e0       	ldi	r17, 0x03	; 3
+			{
+				case 0:
+					ledState = SLOW;
+				break;	
+				case 1:
+					ledState = FAST;
+  e4:	d8 ec       	ldi	r29, 0xC8	; 200
+  e6:	c0 e0       	ldi	r28, 0x00	; 0
+	{	
+		int toggleIndex = 0;
+		int maxToggleIndex = 1;
+		enum state ledState = SLOW;
+		
+		if(PINC & 1)
+  e8:	98 9b       	sbis	0x13, 0	; 19
+  ea:	03 c0       	rjmp	.+6      	; 0xf2 <B6+0x18>
+			{
+				case 0:
+					ledState = SLOW;
+				break;	
+				case 1:
+					ledState = FAST;
+  ec:	8d 2f       	mov	r24, r29
+  ee:	9c 2f       	mov	r25, r28
+  f0:	02 c0       	rjmp	.+4      	; 0xf6 <B6+0x1c>
 	
 	while(1)
-	{
-		for(int i = 0; i < 9; i++ )
-  f2:	c0 17       	cp	r28, r16
-  f4:	d1 07       	cpc	r29, r17
-  f6:	b9 f7       	brne	.-18     	; 0xe6 <B5+0xc>
-  f8:	f4 cf       	rjmp	.-24     	; 0xe2 <B5+0x8>
+	{	
+		int toggleIndex = 0;
+		int maxToggleIndex = 1;
+		enum state ledState = SLOW;
+  f2:	80 2f       	mov	r24, r16
+  f4:	91 2f       	mov	r25, r17
+				break;
+			}
+			
+		}
+		
+		PORTD ^= BIT(7);
+  f6:	22 b3       	in	r18, 0x12	; 18
+  f8:	20 58       	subi	r18, 0x80	; 128
+  fa:	22 bb       	out	0x12, r18	; 18
+		wait(ledState);
+  fc:	dd df       	rcall	.-70     	; 0xb8 <wait>
+	}
+  fe:	f4 cf       	rjmp	.-24     	; 0xe8 <B6+0xe>
 
-000000fa <main>:
+00000100 <main>:
 	0b00000000
 };
 
 int main(void)
 {
-	B5();
-  fa:	ef df       	rcall	.-34     	; 0xda <B5>
+	B6();
+ 100:	ec df       	rcall	.-40     	; 0xda <B6>
 
-000000fc <_exit>:
-  fc:	f8 94       	cli
+00000102 <_exit>:
+ 102:	f8 94       	cli
 
-000000fe <__stop_program>:
-  fe:	ff cf       	rjmp	.-2      	; 0xfe <__stop_program>
+00000104 <__stop_program>:
+ 104:	ff cf       	rjmp	.-2      	; 0x104 <__stop_program>
