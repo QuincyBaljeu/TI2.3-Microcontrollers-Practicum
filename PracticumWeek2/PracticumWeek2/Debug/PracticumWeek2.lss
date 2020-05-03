@@ -3,29 +3,29 @@ PracticumWeek2.elf:     file format elf32-avr
 
 Sections:
 Idx Name          Size      VMA       LMA       File off  Algn
-  0 .data         00000020  00800100  0000013e  000001b2  2**0
+  0 .data         00000020  00800100  00000118  0000018c  2**0
                   CONTENTS, ALLOC, LOAD, DATA
-  1 .text         0000013e  00000000  00000000  00000074  2**1
+  1 .text         00000118  00000000  00000000  00000074  2**1
                   CONTENTS, ALLOC, LOAD, READONLY, CODE
-  2 .comment      00000030  00000000  00000000  000001d2  2**0
+  2 .comment      00000030  00000000  00000000  000001ac  2**0
                   CONTENTS, READONLY
-  3 .note.gnu.avr.deviceinfo 0000003c  00000000  00000000  00000204  2**2
+  3 .note.gnu.avr.deviceinfo 0000003c  00000000  00000000  000001dc  2**2
                   CONTENTS, READONLY
-  4 .debug_aranges 00000030  00000000  00000000  00000240  2**0
+  4 .debug_aranges 00000030  00000000  00000000  00000218  2**0
                   CONTENTS, READONLY, DEBUGGING
-  5 .debug_info   00000a19  00000000  00000000  00000270  2**0
+  5 .debug_info   00000968  00000000  00000000  00000248  2**0
                   CONTENTS, READONLY, DEBUGGING
-  6 .debug_abbrev 0000087e  00000000  00000000  00000c89  2**0
+  6 .debug_abbrev 0000087e  00000000  00000000  00000bb0  2**0
                   CONTENTS, READONLY, DEBUGGING
-  7 .debug_line   000002f7  00000000  00000000  00001507  2**0
+  7 .debug_line   000002b6  00000000  00000000  0000142e  2**0
                   CONTENTS, READONLY, DEBUGGING
-  8 .debug_frame  00000044  00000000  00000000  00001800  2**2
+  8 .debug_frame  00000044  00000000  00000000  000016e4  2**2
                   CONTENTS, READONLY, DEBUGGING
-  9 .debug_str    00000468  00000000  00000000  00001844  2**0
+  9 .debug_str    00000468  00000000  00000000  00001728  2**0
                   CONTENTS, READONLY, DEBUGGING
- 10 .debug_loc    000000ae  00000000  00000000  00001cac  2**0
+ 10 .debug_loc    000000d2  00000000  00000000  00001b90  2**0
                   CONTENTS, READONLY, DEBUGGING
- 11 .debug_ranges 00000020  00000000  00000000  00001d5a  2**0
+ 11 .debug_ranges 00000020  00000000  00000000  00001c62  2**0
                   CONTENTS, READONLY, DEBUGGING
 
 Disassembly of section .text:
@@ -114,7 +114,7 @@ Disassembly of section .text:
   98:	11 e0       	ldi	r17, 0x01	; 1
   9a:	a0 e0       	ldi	r26, 0x00	; 0
   9c:	b1 e0       	ldi	r27, 0x01	; 1
-  9e:	ee e3       	ldi	r30, 0x3E	; 62
+  9e:	e8 e1       	ldi	r30, 0x18	; 24
   a0:	f1 e0       	ldi	r31, 0x01	; 1
   a2:	00 e0       	ldi	r16, 0x00	; 0
   a4:	0b bf       	out	0x3b, r16	; 59
@@ -125,13 +125,13 @@ Disassembly of section .text:
   ae:	b1 07       	cpc	r27, r17
   b0:	d9 f7       	brne	.-10     	; 0xa8 <__do_copy_data+0x10>
   b2:	24 d0       	rcall	.+72     	; 0xfc <main>
-  b4:	42 c0       	rjmp	.+132    	; 0x13a <_exit>
+  b4:	2f c0       	rjmp	.+94     	; 0x114 <_exit>
 
 000000b6 <__bad_interrupt>:
   b6:	a4 cf       	rjmp	.-184    	; 0x0 <__vectors>
 
 000000b8 <B3>:
-    }
+	}
 }
 
 void B3(int digit)
@@ -194,55 +194,35 @@ void wait( int ms )
   fa:	08 95       	ret
 
 000000fc <main>:
+int main(void)
 {
     /* Replace with your application code */
-    while (1) 
-    {
-		
-		B3(1);
-  fc:	81 e0       	ldi	r24, 0x01	; 1
-  fe:	90 e0       	ldi	r25, 0x00	; 0
- 100:	db df       	rcall	.-74     	; 0xb8 <B3>
-		wait(1000);
- 102:	88 ee       	ldi	r24, 0xE8	; 232
- 104:	93 e0       	ldi	r25, 0x03	; 3
- 106:	e9 df       	rcall	.-46     	; 0xda <wait>
-		B3(10);
- 108:	8a e0       	ldi	r24, 0x0A	; 10
- 10a:	90 e0       	ldi	r25, 0x00	; 0
- 10c:	d5 df       	rcall	.-86     	; 0xb8 <B3>
-		wait(1000);
- 10e:	88 ee       	ldi	r24, 0xE8	; 232
- 110:	93 e0       	ldi	r25, 0x03	; 3
- 112:	e3 df       	rcall	.-58     	; 0xda <wait>
-		B3(16);
- 114:	80 e1       	ldi	r24, 0x10	; 16
- 116:	90 e0       	ldi	r25, 0x00	; 0
- 118:	cf df       	rcall	.-98     	; 0xb8 <B3>
-		wait(1000);
- 11a:	88 ee       	ldi	r24, 0xE8	; 232
- 11c:	93 e0       	ldi	r25, 0x03	; 3
- 11e:	dd df       	rcall	.-70     	; 0xda <wait>
-		B3(-1);
- 120:	8f ef       	ldi	r24, 0xFF	; 255
- 122:	9f ef       	ldi	r25, 0xFF	; 255
- 124:	c9 df       	rcall	.-110    	; 0xb8 <B3>
-		wait(1000);
- 126:	88 ee       	ldi	r24, 0xE8	; 232
- 128:	93 e0       	ldi	r25, 0x03	; 3
- 12a:	d7 df       	rcall	.-82     	; 0xda <wait>
-		B3(7);
- 12c:	87 e0       	ldi	r24, 0x07	; 7
- 12e:	90 e0       	ldi	r25, 0x00	; 0
- 130:	c3 df       	rcall	.-122    	; 0xb8 <B3>
- 132:	88 ee       	ldi	r24, 0xE8	; 232
-		wait(1000);
- 134:	93 e0       	ldi	r25, 0x03	; 3
- 136:	d1 df       	rcall	.-94     	; 0xda <wait>
- 138:	e1 cf       	rjmp	.-62     	; 0xfc <main>
+	while(1)
+	{
+		for(int i = 0; i <= 16; i++){
+  fc:	c0 e0       	ldi	r28, 0x00	; 0
+  fe:	d0 e0       	ldi	r29, 0x00	; 0
+			B3(i);
+ 100:	ce 01       	movw	r24, r28
+ 102:	da df       	rcall	.-76     	; 0xb8 <B3>
+			wait(750);
+ 104:	8e ee       	ldi	r24, 0xEE	; 238
+ 106:	92 e0       	ldi	r25, 0x02	; 2
+ 108:	e8 df       	rcall	.-48     	; 0xda <wait>
+int main(void)
+{
+    /* Replace with your application code */
+	while(1)
+	{
+		for(int i = 0; i <= 16; i++){
+ 10a:	21 96       	adiw	r28, 0x01	; 1
+ 10c:	c1 31       	cpi	r28, 0x11	; 17
+ 10e:	d1 05       	cpc	r29, r1
+ 110:	b9 f7       	brne	.-18     	; 0x100 <main+0x4>
+ 112:	f4 cf       	rjmp	.-24     	; 0xfc <main>
 
-0000013a <_exit>:
- 13a:	f8 94       	cli
+00000114 <_exit>:
+ 114:	f8 94       	cli
 
-0000013c <__stop_program>:
- 13c:	ff cf       	rjmp	.-2      	; 0x13c <__stop_program>
+00000116 <__stop_program>:
+ 116:	ff cf       	rjmp	.-2      	; 0x116 <__stop_program>
