@@ -11,7 +11,14 @@
 
 void B3(int);
 void B32();
+void B4();
 void wait(int);
+
+typedef struct  
+{
+	unsigned int segment;
+	unsigned int delay;
+} ANIMATION_STEP;
 
 unsigned int numbers[] = {
 	0b00111111,		//0
@@ -32,10 +39,21 @@ unsigned int numbers[] = {
 	0b01001110,		//F
 };
 
+ANIMATION_STEP animation[] = {
+	{0b00000001, 100},
+	{0b00000010, 100},
+	{0b01000000, 100},
+	{0b00010000, 100},
+	{0b00001000, 100},
+	{0b01000000, 100},
+	{0b00100000, 100},
+	{0b00000001, 100}	
+};
+
 int main(void)
 {
     /* Replace with your application code */
-	B32();
+	B4();
 }
 
 void B3(int digit)
@@ -55,8 +73,8 @@ void B3(int digit)
 
 void B32()
 {
-	DDRD = 0b11111111;
-	DDRC - 0b00000000;
+	DDRD = 0b11111111; //Set PORTD to output
+	DDRC - 0b00000000; //Set PORTC to output
 	
 	int index = 0;
 
@@ -91,6 +109,22 @@ void B32()
 					B3(index);
 				}
 			}
+		}
+	}
+}
+
+void B4(){
+	DDRD = 0b11111111; //Set PORTD to output
+	
+	while(1){
+		int i = 0;
+		
+		while (animation[i].delay != 0)
+		{
+			PORTD = animation[i].segment;
+			wait(animation[i].delay);
+				
+			i++;
 		}
 	}
 }
