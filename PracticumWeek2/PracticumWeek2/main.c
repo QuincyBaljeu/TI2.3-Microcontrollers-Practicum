@@ -10,6 +10,7 @@
 #include <util/delay.h>
 
 void B3(int);
+void B32();
 void wait(int);
 
 unsigned int numbers[] = {
@@ -34,13 +35,7 @@ unsigned int numbers[] = {
 int main(void)
 {
     /* Replace with your application code */
-	while(1)
-	{
-		for(int i = 0; i <= 16; i++){
-			B3(i);
-			wait(750);
-		}
-	}
+	B32();
 }
 
 void B3(int digit)
@@ -56,6 +51,48 @@ void B3(int digit)
 		 PORTD = numbers[digit];
 	}
 	
+}
+
+void B32()
+{
+	DDRD = 0b11111111;
+	DDRC - 0b00000000;
+	
+	int index = 0;
+
+	while (1)
+	{
+		if(PINC & 0b00000001)
+		{
+			if(PINC & 0b00000010)
+			{
+				index = 0;
+			}
+			else
+			{
+				if(index < 15)
+				{
+					index++;
+					B3(index);		
+				}
+			}
+		} 
+		else if(PINC & 0b00000010)
+		{
+			if(PINC & 0b00000001)
+			{
+				index = 0;	
+			}
+			else
+			{
+				if(index > 0)
+				{
+					index--;
+					B3(index);
+				}
+			}
+		}
+	}
 }
 
 void wait( int ms )

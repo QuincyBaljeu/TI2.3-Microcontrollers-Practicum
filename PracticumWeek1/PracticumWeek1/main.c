@@ -15,9 +15,11 @@ void B2();
 void B3();
 void B5();
 void B6();
+void B7();
 void wait(int);
 
 enum state {SLOW = 1000, FAST = 200};
+enum fsmState {START, S1, S2, S3, END};
 
 int b5Animation[] = {
 	0b00000000,
@@ -122,6 +124,10 @@ void B6()
 		PORTD ^= BIT(7);
 		wait(ledState);
 	}
+}
+
+void B7(){
+	enum fsmState state = START;
 	
 	
 }
