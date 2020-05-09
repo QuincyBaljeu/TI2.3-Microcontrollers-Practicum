@@ -5,13 +5,21 @@
  * Author : qbalj
  */ 
 
-#define F_CPU 8e6
 #include <avr/io.h>
 #include <util/delay.h>
+
+#define F_CPU 8e6
+#define LCD_E 	3
+#define LCD_RS	2
 
 void B3(int);
 void B32();
 void B4();
+void writeLcd();
+void init();
+void display_text(char*);
+void set_cursor(int);
+void lcd_write_command(unsigned char);
 void wait(int);
 
 typedef struct  
@@ -53,7 +61,19 @@ ANIMATION_STEP animation[] = {
 int main(void)
 {
     /* Replace with your application code */
-	B4();
+	DDRD = 0xFF;
+	
+	init();
+	
+	display_text("YEDI, YOARE");
+	
+	while (1)
+	{
+		PORTD ^= (1<<7);	// Toggle PORTD.7
+		wait( 250 );
+	}
+
+	return 1;
 }
 
 void B3(int digit)
@@ -127,6 +147,68 @@ void B4(){
 			i++;
 		}
 	}
+}
+
+void writeLcd() {
+	PORTC |= (1<<LCD_E);
+	wait(1);
+	PORTC &= ~(1<<LCD_E);
+	wait(1);
+}
+
+void init() {
+	// PORTC output mode and all low (also E and RS pin)
+	DDRC = 0xFF;
+	PORTC = 0x00;
+
+	// Step 2 (table 12)
+	PORTC = 0x20;	// function set
+	writeLcd();
+
+	// Step 3 (table 12)
+	PORTC = 0x20;   // function set
+	writeLcd();
+	PORTC = 0x80;
+	writeLcd();
+
+	// Step 4 (table 12)
+	PORTC = 0x00;   // Display on/off control
+	writeLcd();
+	PORTC = 0xF0;
+	writeLcd();
+
+	// Step 4 (table 12)
+	PORTC = 0x00;   // Entry mode set
+	writeLcd();
+	PORTC = 0x60;
+	writeLcd();
+}
+
+void display_text(char *str){
+	for(;*str; str++){
+		lcd_write_data(*str);
+	}
+}
+
+/******************************************************************/
+void lcd_write_data(unsigned char byte)
+/*
+short:			Writes 8 bits DATA to lcd
+inputs:			byte - written to LCD
+outputs:
+notes:			According datasheet HD44780 table 12
+Version :    	DMK, Initial code
+*******************************************************************/
+{
+	// First nibble.
+	PORTC = byte;
+	PORTC |= (1<<LCD_RS);
+	writeLcd();
+
+	// Second nibble
+	PORTC = (byte<<4);
+	PORTC |= (1<<LCD_RS);
+	writeLcd();
 }
 
 void wait( int ms )

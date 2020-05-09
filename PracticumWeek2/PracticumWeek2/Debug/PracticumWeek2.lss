@@ -3,29 +3,29 @@ PracticumWeek2.elf:     file format elf32-avr
 
 Sections:
 Idx Name          Size      VMA       LMA       File off  Algn
-  0 .data         00000020  00800100  0000010c  00000180  2**0
+  0 .data         0000000c  00800100  00000170  000001e4  2**0
                   CONTENTS, ALLOC, LOAD, DATA
-  1 .text         0000010c  00000000  00000000  00000074  2**1
+  1 .text         00000170  00000000  00000000  00000074  2**1
                   CONTENTS, ALLOC, LOAD, READONLY, CODE
-  2 .comment      00000030  00000000  00000000  000001a0  2**0
+  2 .comment      00000030  00000000  00000000  000001f0  2**0
                   CONTENTS, READONLY
-  3 .note.gnu.avr.deviceinfo 0000003c  00000000  00000000  000001d0  2**2
+  3 .note.gnu.avr.deviceinfo 0000003c  00000000  00000000  00000220  2**2
                   CONTENTS, READONLY
-  4 .debug_aranges 00000040  00000000  00000000  0000020c  2**0
+  4 .debug_aranges 00000060  00000000  00000000  0000025c  2**0
                   CONTENTS, READONLY, DEBUGGING
-  5 .debug_info   00000a0f  00000000  00000000  0000024c  2**0
+  5 .debug_info   00000b78  00000000  00000000  000002bc  2**0
                   CONTENTS, READONLY, DEBUGGING
-  6 .debug_abbrev 000008cf  00000000  00000000  00000c5b  2**0
+  6 .debug_abbrev 00000949  00000000  00000000  00000e34  2**0
                   CONTENTS, READONLY, DEBUGGING
-  7 .debug_line   00000331  00000000  00000000  0000152a  2**0
+  7 .debug_line   0000045e  00000000  00000000  0000177d  2**0
                   CONTENTS, READONLY, DEBUGGING
-  8 .debug_frame  00000064  00000000  00000000  0000185c  2**2
+  8 .debug_frame  000000c0  00000000  00000000  00001bdc  2**2
                   CONTENTS, READONLY, DEBUGGING
-  9 .debug_str    00000495  00000000  00000000  000018c0  2**0
+  9 .debug_str    000004c4  00000000  00000000  00001c9c  2**0
                   CONTENTS, READONLY, DEBUGGING
- 10 .debug_loc    000000f6  00000000  00000000  00001d55  2**0
+ 10 .debug_loc    000001e7  00000000  00000000  00002160  2**0
                   CONTENTS, READONLY, DEBUGGING
- 11 .debug_ranges 00000030  00000000  00000000  00001e4b  2**0
+ 11 .debug_ranges 00000050  00000000  00000000  00002347  2**0
                   CONTENTS, READONLY, DEBUGGING
 
 Disassembly of section .text:
@@ -114,40 +114,34 @@ Disassembly of section .text:
   98:	11 e0       	ldi	r17, 0x01	; 1
   9a:	a0 e0       	ldi	r26, 0x00	; 0
   9c:	b1 e0       	ldi	r27, 0x01	; 1
-  9e:	ec e0       	ldi	r30, 0x0C	; 12
+  9e:	e0 e7       	ldi	r30, 0x70	; 112
   a0:	f1 e0       	ldi	r31, 0x01	; 1
   a2:	00 e0       	ldi	r16, 0x00	; 0
   a4:	0b bf       	out	0x3b, r16	; 59
   a6:	02 c0       	rjmp	.+4      	; 0xac <__do_copy_data+0x14>
   a8:	07 90       	elpm	r0, Z+
   aa:	0d 92       	st	X+, r0
-  ac:	a0 32       	cpi	r26, 0x20	; 32
+  ac:	ac 30       	cpi	r26, 0x0C	; 12
   ae:	b1 07       	cpc	r27, r17
   b0:	d9 f7       	brne	.-10     	; 0xa8 <__do_copy_data+0x10>
-  b2:	29 d0       	rcall	.+82     	; 0x106 <main>
-  b4:	29 c0       	rjmp	.+82     	; 0x108 <_exit>
+  b2:	4f d0       	rcall	.+158    	; 0x152 <main>
+  b4:	5b c0       	rjmp	.+182    	; 0x16c <_exit>
 
 000000b6 <__bad_interrupt>:
   b6:	a4 cf       	rjmp	.-184    	; 0x0 <__vectors>
 
 000000b8 <wait>:
-	}
-}
-
-void wait( int ms )
-{
-	for (int i=0; i<ms; i++)
+	DDRD = 0b11111111; //Set PORTD to output
+	
+	while(1){
+		int i = 0;
+		
+		while (animation[i].delay != 0)
   b8:	18 16       	cp	r1, r24
   ba:	19 06       	cpc	r1, r25
   bc:	6c f4       	brge	.+26     	; 0xd8 <wait+0x20>
   be:	20 e0       	ldi	r18, 0x00	; 0
   c0:	30 e0       	ldi	r19, 0x00	; 0
-	#else
-		//round up by default
-		__ticks_dc = (uint32_t)(ceil(fabs(__tmp)));
-	#endif
-
-	__builtin_avr_delay_cycles(__ticks_dc);
   c2:	ef ec       	ldi	r30, 0xCF	; 207
   c4:	f7 e0       	ldi	r31, 0x07	; 7
   c6:	31 97       	sbiw	r30, 0x01	; 1
@@ -161,61 +155,177 @@ void wait( int ms )
   d6:	a9 f7       	brne	.-22     	; 0xc2 <wait+0xa>
   d8:	08 95       	ret
 
-000000da <B4>:
+000000da <writeLcd>:
 		}
 	}
 }
 
-void B4(){
-	DDRD = 0b11111111; //Set PORTD to output
-  da:	8f ef       	ldi	r24, 0xFF	; 255
-  dc:	81 bb       	out	0x11, r24	; 17
-	
-	while(1){
-		int i = 0;
-		
-		while (animation[i].delay != 0)
-  de:	00 e0       	ldi	r16, 0x00	; 0
-  e0:	11 e0       	ldi	r17, 0x01	; 1
-  e2:	f8 01       	movw	r30, r16
-  e4:	82 81       	ldd	r24, Z+2	; 0x02
-  e6:	93 81       	ldd	r25, Z+3	; 0x03
-  e8:	89 2b       	or	r24, r25
-  ea:	d9 f3       	breq	.-10     	; 0xe2 <B4+0x8>
-  ec:	c0 e0       	ldi	r28, 0x00	; 0
-  ee:	d1 e0       	ldi	r29, 0x01	; 1
-		{
-			PORTD = animation[i].segment;
-  f0:	88 81       	ld	r24, Y
-  f2:	82 bb       	out	0x12, r24	; 18
-			wait(animation[i].delay);
-  f4:	8a 81       	ldd	r24, Y+2	; 0x02
-  f6:	9b 81       	ldd	r25, Y+3	; 0x03
-  f8:	df df       	rcall	.-66     	; 0xb8 <wait>
-  fa:	24 96       	adiw	r28, 0x04	; 4
-	DDRD = 0b11111111; //Set PORTD to output
-	
-	while(1){
-		int i = 0;
-		
-		while (animation[i].delay != 0)
-  fc:	8a 81       	ldd	r24, Y+2	; 0x02
-  fe:	9b 81       	ldd	r25, Y+3	; 0x03
- 100:	89 2b       	or	r24, r25
- 102:	b1 f7       	brne	.-20     	; 0xf0 <B4+0x16>
- 104:	ee cf       	rjmp	.-36     	; 0xe2 <B4+0x8>
+void writeLcd() {
+	PORTC |= (1<<LCD_E);
+  da:	ab 9a       	sbi	0x15, 3	; 21
+	wait(1);
+  dc:	81 e0       	ldi	r24, 0x01	; 1
+  de:	90 e0       	ldi	r25, 0x00	; 0
+  e0:	eb df       	rcall	.-42     	; 0xb8 <wait>
+	PORTC &= ~(1<<LCD_E);
+  e2:	ab 98       	cbi	0x15, 3	; 21
+	wait(1);
+  e4:	81 e0       	ldi	r24, 0x01	; 1
+  e6:	90 e0       	ldi	r25, 0x00	; 0
+  e8:	e7 cf       	rjmp	.-50     	; 0xb8 <wait>
+  ea:	08 95       	ret
 
-00000106 <main>:
+000000ec <init>:
+}
+
+void init() {
+  ec:	cf 93       	push	r28
+	// PORTC output mode and all low (also E and RS pin)
+	DDRC = 0xFF;
+  ee:	8f ef       	ldi	r24, 0xFF	; 255
+  f0:	84 bb       	out	0x14, r24	; 20
+	PORTC = 0x00;
+  f2:	15 ba       	out	0x15, r1	; 21
+
+	// Step 2 (table 12)
+	PORTC = 0x20;	// function set
+  f4:	c0 e2       	ldi	r28, 0x20	; 32
+  f6:	c5 bb       	out	0x15, r28	; 21
+	writeLcd();
+  f8:	f0 df       	rcall	.-32     	; 0xda <writeLcd>
+
+	// Step 3 (table 12)
+	PORTC = 0x20;   // function set
+	writeLcd();
+  fa:	c5 bb       	out	0x15, r28	; 21
+  fc:	ee df       	rcall	.-36     	; 0xda <writeLcd>
+	PORTC = 0x80;
+  fe:	80 e8       	ldi	r24, 0x80	; 128
+	writeLcd();
+ 100:	85 bb       	out	0x15, r24	; 21
+
+	// Step 4 (table 12)
+	PORTC = 0x00;   // Display on/off control
+ 102:	eb df       	rcall	.-42     	; 0xda <writeLcd>
+	writeLcd();
+ 104:	15 ba       	out	0x15, r1	; 21
+	PORTC = 0xF0;
+ 106:	e9 df       	rcall	.-46     	; 0xda <writeLcd>
+	writeLcd();
+ 108:	80 ef       	ldi	r24, 0xF0	; 240
+
+	// Step 4 (table 12)
+	PORTC = 0x00;   // Entry mode set
+ 10a:	85 bb       	out	0x15, r24	; 21
+	writeLcd();
+ 10c:	e6 df       	rcall	.-52     	; 0xda <writeLcd>
+ 10e:	15 ba       	out	0x15, r1	; 21
+	PORTC = 0x60;
+ 110:	e4 df       	rcall	.-56     	; 0xda <writeLcd>
+ 112:	80 e6       	ldi	r24, 0x60	; 96
+	writeLcd();
+ 114:	85 bb       	out	0x15, r24	; 21
+ 116:	e1 df       	rcall	.-62     	; 0xda <writeLcd>
+}
+ 118:	cf 91       	pop	r28
+ 11a:	08 95       	ret
+
+0000011c <lcd_write_data>:
+inputs:			byte - written to LCD
+outputs:
+notes:			According datasheet HD44780 table 12
+Version :    	DMK, Initial code
+*******************************************************************/
+{
+ 11c:	cf 93       	push	r28
+ 11e:	c8 2f       	mov	r28, r24
+	// First nibble.
+	PORTC = byte;
+ 120:	85 bb       	out	0x15, r24	; 21
+	PORTC |= (1<<LCD_RS);
+ 122:	aa 9a       	sbi	0x15, 2	; 21
+	writeLcd();
+ 124:	da df       	rcall	.-76     	; 0xda <writeLcd>
+
+	// Second nibble
+	PORTC = (byte<<4);
+ 126:	c2 95       	swap	r28
+ 128:	c0 7f       	andi	r28, 0xF0	; 240
+ 12a:	c5 bb       	out	0x15, r28	; 21
+	PORTC |= (1<<LCD_RS);
+	writeLcd();
+ 12c:	aa 9a       	sbi	0x15, 2	; 21
+ 12e:	d5 df       	rcall	.-86     	; 0xda <writeLcd>
+}
+ 130:	cf 91       	pop	r28
+ 132:	08 95       	ret
+
+00000134 <display_text>:
+	writeLcd();
+	PORTC = 0x60;
+	writeLcd();
+}
+
+void display_text(char *str){
+ 134:	cf 93       	push	r28
+ 136:	df 93       	push	r29
+ 138:	ec 01       	movw	r28, r24
+	for(;*str; str++){
+ 13a:	88 81       	ld	r24, Y
+ 13c:	88 23       	and	r24, r24
+ 13e:	31 f0       	breq	.+12     	; 0x14c <display_text+0x18>
+ 140:	21 96       	adiw	r28, 0x01	; 1
+		lcd_write_data(*str);
+ 142:	90 e0       	ldi	r25, 0x00	; 0
+ 144:	eb df       	rcall	.-42     	; 0x11c <lcd_write_data>
+	PORTC = 0x60;
+	writeLcd();
+}
+
+void display_text(char *str){
+	for(;*str; str++){
+ 146:	89 91       	ld	r24, Y+
+ 148:	81 11       	cpse	r24, r1
+ 14a:	fb cf       	rjmp	.-10     	; 0x142 <display_text+0xe>
+		lcd_write_data(*str);
+	}
+}
+ 14c:	df 91       	pop	r29
+ 14e:	cf 91       	pop	r28
+ 150:	08 95       	ret
+
+00000152 <main>:
 };
 
 int main(void)
 {
     /* Replace with your application code */
-	B4();
- 106:	e9 df       	rcall	.-46     	; 0xda <B4>
+	DDRD = 0xFF;
+ 152:	8f ef       	ldi	r24, 0xFF	; 255
+ 154:	81 bb       	out	0x11, r24	; 17
+	
+	init();
+ 156:	ca df       	rcall	.-108    	; 0xec <init>
+	
+	display_text("YEDI, YOARE");
+ 158:	80 e0       	ldi	r24, 0x00	; 0
+ 15a:	91 e0       	ldi	r25, 0x01	; 1
+ 15c:	eb df       	rcall	.-42     	; 0x134 <display_text>
+	
+	while (1)
+	{
+		PORTD ^= (1<<7);	// Toggle PORTD.7
+ 15e:	82 b3       	in	r24, 0x12	; 18
+ 160:	80 58       	subi	r24, 0x80	; 128
+ 162:	82 bb       	out	0x12, r24	; 18
+		wait( 250 );
+ 164:	8a ef       	ldi	r24, 0xFA	; 250
+ 166:	90 e0       	ldi	r25, 0x00	; 0
+ 168:	a7 df       	rcall	.-178    	; 0xb8 <wait>
+ 16a:	f9 cf       	rjmp	.-14     	; 0x15e <main+0xc>
 
-00000108 <_exit>:
- 108:	f8 94       	cli
+0000016c <_exit>:
+ 16c:	f8 94       	cli
 
-0000010a <__stop_program>:
- 10a:	ff cf       	rjmp	.-2      	; 0x10a <__stop_program>
+0000016e <__stop_program>:
+ 16e:	ff cf       	rjmp	.-2      	; 0x16e <__stop_program>
