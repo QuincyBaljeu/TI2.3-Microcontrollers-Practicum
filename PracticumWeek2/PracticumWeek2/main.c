@@ -7,6 +7,7 @@
 
 #include <avr/io.h>
 #include <util/delay.h>
+#include <avr/interrupt.h>
 
 #define F_CPU 8e6
 #define LCD_E 	3
@@ -19,7 +20,7 @@ void writeLcd();
 void init();
 void display_text(char*);
 void set_cursor(int);
-void lcd_write_command(unsigned char);
+void writeLcdData(unsigned char);
 void wait(int);
 
 typedef struct  
@@ -58,21 +59,34 @@ ANIMATION_STEP animation[] = {
 	{0b00000001, 100}	
 };
 
+ISR(INT4_vect)
+{
+	PORTD |= ~(1<<5);
+	wait(100);
+}
+
+ISR(INT5_vect)
+{
+	PORTD &= ~(1<<5);
+	wait(100);
+}
+
 int main(void)
 {
     /* Replace with your application code */
-	DDRD = 0xFF;
+
+	DDRD = 0xF0;	
+	PORTD = 0x00;
 	
-	init();
+	EICRA |= 0x0B;			
+	EIMSK |= 0x03;
 	
-	display_text("YEDI, YOARE");
+	sei();
 	
 	while (1)
 	{
-		PORTD ^= (1<<7);	// Toggle PORTD.7
-		wait( 250 );
+		
 	}
-
 	return 1;
 }
 
@@ -157,55 +171,48 @@ void writeLcd() {
 }
 
 void init() {
-	// PORTC output mode and all low (also E and RS pin)
 	DDRC = 0xFF;
 	PORTC = 0x00;
 
-	// Step 2 (table 12)
 	PORTC = 0x20;	// function set
 	writeLcd();
 
-	// Step 3 (table 12)
 	PORTC = 0x20;   // function set
 	writeLcd();
 	PORTC = 0x80;
 	writeLcd();
 
-	// Step 4 (table 12)
 	PORTC = 0x00;   // Display on/off control
 	writeLcd();
 	PORTC = 0xF0;
 	writeLcd();
 
-	// Step 4 (table 12)
 	PORTC = 0x00;   // Entry mode set
 	writeLcd();
 	PORTC = 0x60;
 	writeLcd();
 }
 
+void set_cursor(int position){
+	DDRC = 0xFF;
+	PORTC = 0x00;
+	
+	PORTC = 0x80 + position;
+	
+}
+
 void display_text(char *str){
 	for(;*str; str++){
-		lcd_write_data(*str);
+		writeLcdData(*str);
 	}
 }
 
-/******************************************************************/
-void lcd_write_data(unsigned char byte)
-/*
-short:			Writes 8 bits DATA to lcd
-inputs:			byte - written to LCD
-outputs:
-notes:			According datasheet HD44780 table 12
-Version :    	DMK, Initial code
-*******************************************************************/
-{
-	// First nibble.
+void writeLcdData(unsigned char byte) {
+	
 	PORTC = byte;
 	PORTC |= (1<<LCD_RS);
 	writeLcd();
 
-	// Second nibble
 	PORTC = (byte<<4);
 	PORTC |= (1<<LCD_RS);
 	writeLcd();
