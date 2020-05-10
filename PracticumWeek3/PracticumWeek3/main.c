@@ -7,11 +7,15 @@
 
 #include <avr/io.h>
 #include <util/delay.h>
+#include "stdio.h"
+#include <avr/interrupt.h>
 
 #define F_CPU 8e6
 #define LCD_E 	3
 #define LCD_RS	2
 
+void B1();
+void B2();
 void writeLcd();
 void init();
 void display_text(char*);
@@ -20,10 +24,60 @@ void wait(int);
 
 int main(void)
 {
-    /* Replace with your application code */
-    while (1) 
+	B1();
+}
+
+void B1()
+{
+    DDRD = 0b0000001;
+    TCCR2 = 0b00000111; 
+    
+    DDRB = 0b00000000; // PORTB is output
+    init();
+    
+	int counterIn;
+	
+    while (1)
     {
-    }
+	    PORTD = TCNT2;
+		counterIn = TCNT2;
+		
+		char counterString[16];
+		sprintf(counterString, "%u", counterIn);
+		
+		display_text(counterString);
+    }	
+	
+}
+
+ISR(TIMER1_COMPA_vect)
+{
+	PORTD = 0b00000001;
+	wait(15);
+	PORTD = 0b00000000;
+	wait(25);
+}
+
+void B2()
+{
+	DDRD = 0b11111111; //set PORTD to output
+	
+	cli(); // Disable interrupts
+
+	 TCCR1A = 0;
+	 TCCR1B = 0;
+	 TCNT1  = 0;
+	
+	 OCR1A = 15624;
+	 
+	 TCCR1B |= (1 << WGM12);
+	
+	 TCCR1B |= (1 << CS12) | (1 << CS10);
+	
+	 TIMSK1 |= (1 << OCIE4A);
+
+	 sei();//allow interrupts
+	
 }
 
 void writeLcd() {
